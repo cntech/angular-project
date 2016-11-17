@@ -3,18 +3,17 @@ import { Injectable, Component, NgZone } from '@angular/core'
 import { Store, createStore, Unsubscribe } from 'redux'
 
 import reducer from './reducers'
+import State from './states'
+import { setMainText, SetMainText } from './actions'
 
 @Injectable()
 export class StoreService {
-  private reduxStore: Store<any>
+  private reduxStore: Store<State>
   private reduxUnsubscribe: Unsubscribe
   constructor() {
     this.reduxStore = createStore(reducer)
-    window['setMainText'] = (mainText) => {
-      this.reduxStore.dispatch({
-        type: 'SetMainText',
-        mainText: mainText
-      })
+    window['setMainText'] = (mainText: string) => {
+      this.reduxStore.dispatch(setMainText({ mainText: mainText }))
     }
   }
   subscribe(component: Component, ngZone: NgZone): () => void {
@@ -23,7 +22,7 @@ export class StoreService {
     }))
     return () => this.reduxUnsubscribe()
   }
-  getState(): any {
+  getState(): State {
     return this.reduxStore.getState()
   }
 }
